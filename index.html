@@ -5,28 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fibonacci Game</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        input, button {
-            margin: 10px;
-            padding: 10px;
-            font-size: 16px;
-        }
-        .results {
-            margin-top: 20px;
-            text-align: left;
-        }
+       body {
+  background-color: aqua;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 50px;
+}
+.container {
+  background-color: azure;
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+input, button {
+  margin: 10px;
+  padding: 10px;
+  font-size: 16px;
+}
+.results {
+  margin-top: 20px;
+  text-align: left;
+}
+
     </style>
 </head>
 <body>
@@ -40,27 +43,44 @@
 
     <script>
         function calculateFibonacci() {
-            const n = document.getElementById("numberInput").value;
-            if (n === "" || n < 0) {
-                alert("Please enter a valid positive number");
-                return;
-            }
+    const n = document.getElementById("numberInput").value;
+    if (n === "" || n < 0) {
+        alert("Please enter a valid positive number");
+        return;
+    }
 
-            fetch("https://fibonacciweb.onrender.com/calculate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ number: n })
-            })
-            .then(response => response.json())
-            .then(data => {
-                let output = `<h3>Results for Fibonacci(${n})</h3>`;
-                for (let method in data) {
-                    output += `<p><b>${method}:</b> ${data[method].value} (Time: ${data[method].time.toFixed(6)}s)</p>`;
-                }
-                document.getElementById("results").innerHTML = output;
-            })
-            .catch(error => console.error("Error:", error));
+    fetch("https://fibonacciweb.onrender.com/calculate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ number: n })
+    })
+    .then(response => response.json())
+    .then(data => {
+        let output = `<h3>Results for Fibonacci(${n})</h3>`;
+        let fastestMethod = null;
+        let minTime = Infinity;
+
+        for (let method in data) {
+            const timeTaken = data[method].time;
+            output += `<p><b>${method}:</b> ${data[method].value} (Time: ${timeTaken.toFixed(6)}s)</p>`;
+
+            // Check if this method is the fastest
+            if (timeTaken < minTime) {
+                minTime = timeTaken;
+                fastestMethod = method;
+            }
         }
+
+        // Display the fastest method in bold and larger text
+        if (fastestMethod) {
+            output += `<h2 style="color: green; margin-top: 20px;">Method <b>${fastestMethod}</b> was the fastest!</h2>`;
+        }
+
+        document.getElementById("results").innerHTML = output;
+    })
+    .catch(error => console.error("Error:", error));
+}
+
     </script>
 </body>
 </html>
