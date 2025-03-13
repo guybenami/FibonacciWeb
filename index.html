@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fibonacci Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .results {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Fibonacci Number Calculator</h2>
+        <p>Enter an index (n) to calculate the Fibonacci number using different methods:</p>
+        <input type="number" id="numberInput" placeholder="Enter a number" min="0">
+        <button onclick="calculateFibonacci()">Calculate</button>
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        function calculateFibonacci() {
+            const n = document.getElementById("numberInput").value;
+            if (n === "" || n < 0) {
+                alert("Please enter a valid positive number");
+                return;
+            }
+
+            fetch("http://127.0.0.1:5000/calculate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ number: n })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let output = `<h3>Results for Fibonacci(${n})</h3>`;
+                for (let method in data) {
+                    output += `<p><b>${method}:</b> ${data[method].value} (Time: ${data[method].time.toFixed(6)}s)</p>`;
+                }
+                document.getElementById("results").innerHTML = output;
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+</body>
+</html>
